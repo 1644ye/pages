@@ -4,5 +4,5 @@
   "nativeRecovery": true,
   "host": "0.2.0-rc.2",
   "platform": "win32",
-  "scope": "Exact archive: real native sidebar/main panel UI, history dropdown and downloaded XLSX verified; actual native guard restored 0.1.7 from broken local 0.1.8 with data retained. Public positive upgrade and guard exit verified after release."
+  "scope": "Exact archive: real native sidebar/main panel UI, history dropdown and downloaded XLSX verified; actual native guard restored 0.1.7 from broken local 0.1.8 with data retained. Public positive upgrade and guard exit are recorded separately after publication."
 }
