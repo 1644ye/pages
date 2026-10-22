@@ -1,13 +1,19 @@
 # Shopify 页面生成器
 
-打开部署地址，或运行 `python -m http.server 8765 --directory dist` 后访问 http://localhost:8765。
+项目同时提供离线版和 DSH 原生插件。DSH 插件使用宿主模型生成页面，与下方纯本地模板模式不同；安装和用法见 [DSH 安装使用说明](docs/DSH安装使用说明.md)，实际验证范围见 [验证记录](docs/dsh-migration.md)。插件源码位于 `dsh-plugin/`，依赖清单和锁文件一并保留；`scripts/build-dsh.py` 构建插件界面，`scripts/package-dsh.mjs` 生成安装归档。发布安装包不提交到 Git 历史，由发布流程构建。
 
-填写品牌名、联系邮箱、参考网站标题、参考内容和最高折扣。连接支持 Chat Completions 和浏览器 CORS 的 AI 服务，填写密钥、模型和接口地址，再生成。密钥仅留在当前页面内存，不写入存储。也可以复制完整提示词到自己的 AI 工具，粘贴或上传返回的 JSON。
+`dist/` 是离线版的直接维护源文件，也是插件界面构建的必要输入，因此保留；生成的 `portable/`、`release/`、宿主审计和测试数据均忽略。
 
-生成七个英文页面并附加固定的 Contact Us，共八个页面，About Us 至少 3,000 英文单词。可预览、编辑 HTML，下载与原 pages.xlsx 字段一致的 Pages.xlsx。使用 Matrixify 的 Pages 导入，默认草稿；勾选发布则 Published 为 TRUE。MERGE 按 handle 创建或更新；不复用参考商店的 ID、日期及 Contact、Your Privacy Choices 页面。
+双击 start.cmd，或直接打开 dist/index.html。也可以运行本地静态服务器并访问 http://127.0.0.1:8765/。
 
-首页公告栏、位置建议、SEO 和需要确认的事实另行下载。Matrixify Pages 不自动配置主题公告栏或页面 SEO。Privacy Policy 按提供的规则生成，使用者应核对实际数据处理实践。
+填写参考网站描述的标题和内容、最高折扣（品牌名称选填，仅用于 SEO 和提示词），点击“本地生成页面”。联系邮箱、文案日期默认空白且为选填。日期为空时使用通用公告文案；邮箱为空时使用 Contact Us 页面作为帮助入口。
 
-API 服务按其收费方式计费。应用不内置密钥或免费 AI 额度，不保存输入或生成历史；需要留存时下载 JSON。Excel 单元格限制为 32,767 字符，过长 HTML 会阻止导出。
+生成过程完全在浏览器本地执行，不调用 AI，不需要 API Key，也不请求外部字体或资源。内置英文模板根据参考描述中的商品类别和卖点关键词进行组合，不提供自由语义改写或翻译；结果可预览并编辑。
 
-Contact Us 保留用户提供的双栏布局、客服时间和跳转首页逻辑，固定模板不经 AI 改写。它不会发送邮件或保存留言。
+生成七个英文页面并附加固定 Contact Us，共八个页面。About Us 至少 3,000 英文单词。导出的 Pages-and-Menus.xlsx 包含 Pages 和 Menus 两张表，分别匹配样例的 11 列和 18 列字段，使用 Matrixify 导入整个文件。About 菜单包含 Contact Us、About Us；Information 菜单包含其余六个政策页面。菜单通过页面 handle 关联，导入后在主题导航或页脚选择对应菜单。默认发布可见（Published 为 TRUE），取消勾选可改为草稿。MERGE 按 handle 新建或更新页面，不复用参考商店 ID 和日期。
+
+首页公告栏、位置建议和 SEO 文案单独下载。Pages 导入不会自动配置主题公告栏或页面 SEO。需要留存时下载 JSON，可在下次打开时恢复。
+
+Contact Us 保留用户提供的双栏布局、客服时间和跳转首页逻辑。该表单不发送邮件或保存留言。页面中展示的商品特征和隐私说明应与实际经营情况核对。
+
+首页与 SEO 提示词：支持下拉多选、全选、尺码表、可选源网址和 SEO 信息，以及折扣/免运费/产品特色等重点。点击生成自动拼接当前品牌、描述和折扣，并复制到剪贴板。浏览器拒绝复制时显示可手动复制的完整文本。

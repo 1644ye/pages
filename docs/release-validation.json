@@ -1,0 +1,8 @@
+{
+  "version": "0.1.2",
+  "sha256": "ba092a58791c3f953a7e7defaa04bc2b655d15c0d0067be326141f43162b914f",
+  "nativeRecovery": true,
+  "host": "0.2.0-rc.2",
+  "platform": "win32",
+  "scope": "Local native install, upgrade and independent recovery guard; no GitHub release or GUI acceptance claimed."
+}

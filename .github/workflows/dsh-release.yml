@@ -1,0 +1,56 @@
+name: DSH plugin checks and release
+on:
+  push:
+    tags: ['dsh-v*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: dsh-plugin/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci --ignore-scripts --omit=peer
+        working-directory: dsh-plugin
+      - run: python scripts/build-dsh.py
+      - run: node --test dsh-plugin/test/*.test.mjs
+      - run: node scripts/package-dsh.mjs
+      - name: Install exact DSH runtime for clean-profile verification
+        run: npm install --prefix .dsh-ci @deepseek-ai/dsh@0.2.0-rc.2 --ignore-scripts --no-audit --no-fund
+      - run: node scripts/ci-install.mjs
+      - run: python scripts/package-delivery.py
+      - name: Verify tag matches package
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node -e "const p=require('./dsh-plugin/package.json');if(process.env.GITHUB_REF_NAME!=='dsh-v'+p.version)process.exit(1)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsh-installable
+          path: release/*
+  publish:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dsh-installable
+          path: release
+      - name: Create draft, upload all assets, then publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --draft --title "$GITHUB_REF_NAME" --notes "DSH Page Studio. Windows / DSH 0.2.0-rc.2. Restart required. See installation and validation notes."
+          gh release upload "$GITHUB_REF_NAME" release/*
+          gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets | length' | grep -q '^4$'
+          gh release edit "$GITHUB_REF_NAME" --draft=false

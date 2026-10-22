@@ -1,0 +1,12 @@
+import {readFile,mkdtemp,writeFile} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {Exporter} from '../dsh-plugin/host/exporter.mjs';
+import {validateContent} from '../dsh-plugin/shared/content.mjs';
+const root=resolve(import.meta.dirname,'..');const task=JSON.parse(await readFile(join(root,'.dsh-test/generated.json'),'utf8'));
+validateContent(task.content);
+const exporter=await new Exporter(join(root,'dsh-plugin'),{dir:join(root,'.dsh-test/export-check')}).init();
+const file=await exporter.create(task);const repeated=await exporter.create(task);if(file.name!==repeated.name)throw Error('duplicate export');
+const edited=structuredClone(task);edited.revision='edited-snapshot';edited.content.pages[1].body_html+='<p>Saved edit verification: 中文段落。</p>';
+const changed=await exporter.create(edited);if(file.name===changed.name)throw Error('revision mixed');
+await writeFile(join(root,'.dsh-test/export-evidence.json'),JSON.stringify({original:file,edited:changed,dir:exporter.dir},null,2));
+console.log(JSON.stringify({original:file.name,edited:changed.name,sameVersionDeduplicated:true,boundRevision:file.resultRevision}));

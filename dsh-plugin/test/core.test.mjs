@@ -1,0 +1,16 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {expandTemplate,parseContent,MAX_INPUT,generationPrompt} from '../shared/content.mjs';
+import {packEntries,inspectArchive} from '../host/archive.mjs';
+import {chooseRelease} from '../host/updater.mjs';
+import {Store} from '../host/storage.mjs';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {Exporter} from '../host/exporter.mjs';
+test('required prompt variables and defaults, no raw placeholder send',()=>{assert.equal(expandTemplate('Hi {{name}} {{tone}}',{name:'A'},{tone:'warm'}),'Hi A warm');assert.throws(()=>expandTemplate('{{missing}}',{}),/missing/);assert.throws(()=>generationPrompt({goal:'x'.repeat(MAX_INPUT)}),/超过/)});
+test('invalid/failed-repair content cannot export',()=>{assert.throws(()=>parseContent('{"_repairStatus":"failed","reason":"bad"}'),/修复失败/);assert.throws(()=>parseContent('{"schemaVersion":1,"pages":[]}'),/七个/)});
+test('semver and channel choose numerically, not latest/string order',()=>{const releases=[{id:1},{id:2},{id:3,prerelease:true},{id:4,draft:true}],metas=new Map([[1,{version:'0.9.0'}],[2,{version:'0.10.0'}],[3,{version:'1.0.0-rc.1'}],[4,{version:'2.0.0'}]]);assert.deepEqual(chooseRelease(releases,metas,'0.1.0').map(x=>x.meta.version),['0.10.0','0.9.0'])});
+test('archives reject traversal and corruption before installation',()=>{assert.throws(()=>packEntries([['package/../bad','x']]),/不安全/);const blob=packEntries([['package/package.json','{}'],['package/host/index.mjs',''],['package/web/index.html',''],['package/cordis.patch.yml','']]);assert.equal(inspectArchive(blob).entries.size,4);blob[blob.length-5]^=255;assert.throws(()=>inspectArchive(blob))});
+test('user prompt/history survives reopening with independent snapshots',async()=>{const dir=await mkdtemp(join(tmpdir(),'page-studio-'));try{const store=await new Store(dir).init();store.value.prompts.push({id:'p',version:1,content:'original'});await store.history({revision:'r',content:'result'});store.value.prompts[0].content='changed';const reopened=await new Store(dir).init();assert.equal(reopened.value.prompts[0].content,'original');assert.equal(reopened.value.history[0].content,'result')}finally{await rm(dir,{recursive:true,force:true})}});
+test('export snapshot does not clone the live task promise or abort handle',async()=>{const task={requestId:'r',revision:'v',attempt:1,promise:Promise.resolve(),abort:new AbortController(),content:{pages:[]}};const exporter=new Exporter('',{dir:tmpdir()});await assert.rejects(()=>exporter.create(task),/七个/)});
