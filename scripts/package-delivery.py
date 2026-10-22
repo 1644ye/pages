@@ -4,7 +4,7 @@ root=Path(__file__).resolve().parents[1]
 meta=json.loads((root/'dsh-plugin/package.json').read_text(encoding='utf8'))
 version=meta['version'];asset=meta['name']+'-'+version+'.tgz'
 archive=root/'release'/f'PageStudio-DSH-{version}-Windows.zip'
-installer=f'''@echo off
+installer=fr'''@echo off
 chcp 65001 >nul
 setlocal DisableDelayedExpansion
 set "PAGE_STUDIO_CLI=%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"

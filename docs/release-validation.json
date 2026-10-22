@@ -1,8 +1,8 @@
 {
-  "version": "0.1.2",
-  "sha256": "ba092a58791c3f953a7e7defaa04bc2b655d15c0d0067be326141f43162b914f",
-  "nativeRecovery": true,
+  "version": "0.1.4",
+  "sha256": "9c03ca54190470f18ce29101b692e878f562f9c9aace1b8d03557215185bee48",
+  "nativeRecovery": false,
   "host": "0.2.0-rc.2",
   "platform": "win32",
-  "scope": "Local native install, upgrade and independent recovery guard; no GitHub release or GUI acceptance claimed."
+  "scope": "Final archive reinstall verification in progress after detecting a local tarball cache reuse."
 }
