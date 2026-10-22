@@ -1,3 +1,5 @@
+# pages
+
 # Shopify 页面生成器
 
 项目同时提供离线版和 DSH 原生插件。DSH 插件使用宿主模型生成页面，与下方纯本地模板模式不同；安装和用法见 [DSH 安装使用说明](docs/DSH安装使用说明.md)，实际验证范围见 [验证记录](docs/dsh-migration.md)。插件源码位于 `dsh-plugin/`，依赖清单和锁文件一并保留；`scripts/build-dsh.py` 构建插件界面，`scripts/package-dsh.mjs` 生成安装归档。发布安装包不提交到 Git 历史，由发布流程构建。
