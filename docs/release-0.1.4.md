@@ -5,11 +5,15 @@
 ## 已实际验证
 
 - 真实 CLI 安装 0.1.4 并加载，宿主认证后的插件接口返回 0.1.4；入口、静态工作区及导出健康检查成功。
-- 使用宿主 `deepseek-official / deepseek-flash / high` 完整生成七个页面，成功结束同一次请求与 turn；无模拟结果或模板兜底。
-- 真实任务 `40321f68-1f6a-45be-830f-be6f66dedd16` 完成并自动导出。下载 XLSX 64,460 bytes，经 openpyxl 重新打开，Pages/Menus 均为表头加八条记录，页面全部 Published TRUE。
+- 使用宿主 `deepseek-official / deepseek-flash / low` 完整生成七个页面，成功结束同一次请求与 turn；无模拟结果或模板兜底。
+- 真实任务 `6d7c540f-d6ed-47d9-b3c3-e95cb9454d61` 完成并自动导出。下载 XLSX 64,476 bytes，经 openpyxl 重新打开，Pages/Menus 均为表头加八条记录，页面全部 Published TRUE。
 - 全新 `page-studio-install-check` Profile 中安装、`--dump-config` 检查 bundle 层和 CLI 卸载均成功；卸载后 Profile 不再声明该 bundle。
-- 九项单元测试及前端 JS 语法检查通过。与真实宿主测试分别记录，不将其作为模型或升级成功证据。
+- 十项单元测试及前端 JS 语法检查通过。与真实宿主测试分别记录，不将其作为模型或升级成功证据。
 - GitHub 仓库描述、topic 已更新，含 `dsh-plugin`。生产更新器实际访问固定仓库 GitHub API 成功。
+
+已确认同名本地候选归档可能被包管理器缓存复用。最终归档改用唯一文件名重装，并将实际安装目录重新打包与发布 TGZ 比较 SHA-256；一致值为 `9c03ca54190470f18ce29101b692e878f562f9c9aace1b8d03557215185bee48`。宿主真实 bundle 元数据显示中英文名称正确；认证后的编辑器资源和重启提示 HTML 均返回成功。
+
+高推理档精确候选测试持续思考后已真实取消，未产生导出；最终成功生成使用低推理档，不改变日常宿主默认设置。
 
 ## 尚在执行
 

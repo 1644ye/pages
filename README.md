@@ -32,6 +32,8 @@ DSH 插件通过宿主的 DeepSeek 对话生成七个页面，并附加固定 Co
 & "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop remove dsh-shopify-page-studio
 ```
 
+卸载后保存工作并重启 DSH，使当前进程卸载插件。
+
 ## 插件市场与验证
 
 仓库已使用 `dsh-plugin` topic，投稿分类为 `workflow`。官方提供第三方市场索引协议，不存在统一官方收录状态。Awesome DSH Plugin 要求仓库创建满一天；本仓库创建于 2026-10-22 02:51:24 UTC，2026-10-23 10:51:24（北京时间）后才满足年龄门槛。投稿文件是 `market/submission.yml`，目前为**待提交，未收录**。
