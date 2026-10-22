@@ -64,7 +64,10 @@ export async function apply(ctx){
   instances.set(profile,{store,tasks,adapter,updater,exporter});
   ctx.effect(()=>{updater.start();return async()=>{instances.delete(profile);updater.dispose();await tasks.dispose();await adapter.dispose();await store.chain}},'page-studio lifecycle');
   // No paid generation in a health check. Contract module and user storage are checked on load.
-  await writeFile(join(store.dir,'health.json'),JSON.stringify({version:meta.version,pid:process.pid,at:Date.now(),healthy:true}));
+  const health=JSON.stringify({version:meta.version,pid:process.pid,at:Date.now(),healthy:true});
+  await writeFile(join(store.dir,'health.json'),health);
+  // Older recovery helpers also read this exact updates/health.json path.
+  await writeFile(join(updater.dir,'health.json'),health);
   await updater.confirmHealth();
   ctx.logger.info('Page Studio loaded '+meta.version+' (DSH 0.2.0-rc.2)');
 }

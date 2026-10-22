@@ -6,18 +6,18 @@ DSH 插件通过宿主的 DeepSeek 对话生成七个页面，并附加固定 Co
 
 支持 **Windows / DeepSeek Harness 0.2.0-rc.2 / Node 24 运行时**。不声明兼容其他 DSH 版本。
 
-- [正式 Release](https://github.com/1644ye/pages/releases/tag/dsh-v0.1.4)
-- [Windows 安装 ZIP](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/PageStudio-DSH-0.1.4-Windows.zip)
-- [原生插件 TGZ](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/dsh-shopify-page-studio-0.1.4.tgz)
-- [SHA-256 校验文件](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/SHA256SUMS)
+- [正式 Release](https://github.com/1644ye/pages/releases/tag/dsh-v0.1.7)
+- [Windows 安装 ZIP](https://github.com/1644ye/pages/releases/download/dsh-v0.1.7/PageStudio-DSH-0.1.7-Windows.zip)
+- [原生插件 TGZ](https://github.com/1644ye/pages/releases/download/dsh-v0.1.7/dsh-shopify-page-studio-0.1.7.tgz)
+- [SHA-256 校验文件](https://github.com/1644ye/pages/releases/download/dsh-v0.1.7/SHA256SUMS)
 
-解压 ZIP，双击“安装到DSH.cmd”，安装到 desktop Profile。保存工作后完全退出并重新打开 DSH，点击左下角 **Page Studio · 页面生成**。插件默认启用；若曾关闭，请在 DSH 插件管理器启用 `dsh-shopify-page-studio`。
+解压 ZIP，双击“安装到DSH.cmd”，安装到 desktop Profile。保存工作后完全退出并重新打开 DSH，点击 DSH 原生侧栏 **页面工作台**。插件默认启用；若曾关闭，请在 DSH 插件管理器启用 `dsh-shopify-page-studio`。
 
 已用本机真实 CLI 验证以下安装形式；将路径换为你下载文件的绝对路径：
 
 ```powershell
 & "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" --version
-& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add "C:\Downloads\dsh-shopify-page-studio-0.1.4.tgz"
+& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add "C:\Downloads\dsh-shopify-page-studio-0.1.7.tgz"
 ```
 
 配置好 DSH 的 DeepSeek 模型后填写参考标题、内容和折扣，点击“生成并导出”。模型使用宿主账号和用量，导出本身在本地完成。保存编辑后再次导出会使用对应的已保存版本。浏览器阻止自动下载时使用结果中的下载链接。Contact Us 表单仅跳转首页，不发送邮件。
@@ -40,9 +40,9 @@ DSH 插件通过宿主的 DeepSeek 对话生成七个页面，并附加固定 Co
 
 另提供[自有 format-1 索引](https://raw.githubusercontent.com/1644ye/pages/main/market/index.json)，安装源固定到不可变 Git commit。当前本机 0.2.0-rc.2 未包含官方 Custom plugin markets，不能宣称在该版本中已验证 Discover；本机请使用 Release 安装包。较新宿主即使支持索引，也需先满足插件的精确兼容声明。
 
-已通过真实 DeepSeek 生成、一键导出、公开 Release 的 0.1.2 → 0.1.4 自动升级、失败恢复和[干净环境 CI](https://github.com/1644ye/pages/actions/runs/39717314021)。
+0.1.7 将入口并入 DSH 原生侧栏和主内容区，取消悬浮按钮及覆盖弹层；按钮、下拉框、输入框和复选框统一为蓝白风格。实际点击入口、恢复历史结果和 UI 导出均已验证；13 项回归测试通过。旧 0.1.4 的正向恢复健康路径存在缺陷，已在 0.1.7 修复，具体升级验证见本次验收记录。
 
-真实宿主验证与未验证范围记录在 [发布验收记录](docs/release-0.1.4.md)。完整中文步骤见 [安装使用说明](docs/DSH安装使用说明.md)。
+真实宿主验证与未验证范围记录在 [发布验收记录](docs/release-0.1.7.md)。完整中文步骤见 [安装使用说明](docs/DSH安装使用说明.md)。
 
 ## 开发与打包
 

@@ -10,8 +10,10 @@ const alive=()=>{try{process.kill(pending.pid,0);return true}catch{return false}
 while(alive()){try{await readFile(pendingFile)}catch{process.exit(0)}await delay(5000)}
 let healthy=false;
 const waitMs=Math.min(300000,Math.max(10000,pending.healthTimeoutMs||300000));
-for(let elapsed=0;elapsed<waitMs;elapsed+=5000){try{const h=JSON.parse(await readFile(join(pending.dir,'health.json'),'utf8'));if(h.healthy&&h.version===pending.version&&h.at>pending.at){healthy=true;break}}catch{}await delay(5000)}
+async function stillCurrent(){try{const p=JSON.parse(await readFile(pendingFile,'utf8'));return p.at===pending.at&&p.version===pending.version&&!p.recovered}catch(error){if(error.code==='ENOENT')return false;throw error}}
+for(let elapsed=0;elapsed<waitMs;elapsed+=5000){if(!await stillCurrent())process.exit(0);try{const h=JSON.parse(await readFile(join(pending.dir,'health.json'),'utf8'));if(h.healthy&&h.version===pending.version&&h.at>pending.at){healthy=true;break}}catch{}await delay(5000)}
 if(healthy)process.exit(0);
+if(!await stillCurrent())process.exit(0);
 // The process has exited and the new plugin never became healthy: recover the exact previous artifact.
 const child=spawn(pending.exe,['--expose-internals',pending.cli,'plugin','--profile',pending.profile,'add',pending.backup],{stdio:'ignore',windowsHide:true,env:{...process.env,ELECTRON_RUN_AS_NODE:'1'}});
 const code=await new Promise(r=>{child.on('error',()=>r(-1));child.on('close',r)});
