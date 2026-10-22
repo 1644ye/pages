@@ -40,6 +40,8 @@ DSH 插件通过宿主的 DeepSeek 对话生成七个页面，并附加固定 Co
 
 另提供[自有 format-1 索引](https://raw.githubusercontent.com/1644ye/pages/main/market/index.json)，安装源固定到不可变 Git commit。当前本机 0.2.0-rc.2 未包含官方 Custom plugin markets，不能宣称在该版本中已验证 Discover；本机请使用 Release 安装包。较新宿主即使支持索引，也需先满足插件的精确兼容声明。
 
+已通过真实 DeepSeek 生成、一键导出、公开 Release 的 0.1.2 → 0.1.4 自动升级、失败恢复和[干净环境 CI](https://github.com/1644ye/pages/actions/runs/39717314021)。
+
 真实宿主验证与未验证范围记录在 [发布验收记录](docs/release-0.1.4.md)。完整中文步骤见 [安装使用说明](docs/DSH安装使用说明.md)。
 
 ## 开发与打包
