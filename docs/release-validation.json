@@ -1,8 +1,8 @@
 {
   "version": "0.1.4",
   "sha256": "9c03ca54190470f18ce29101b692e878f562f9c9aace1b8d03557215185bee48",
-  "nativeRecovery": false,
+  "nativeRecovery": true,
   "host": "0.2.0-rc.2",
   "platform": "win32",
-  "scope": "Final archive reinstall verification in progress after detecting a local tarball cache reuse."
+  "scope": "Exact installed archive hash verified; real DeepSeek generation and XLSX export; native guard restored this exact archive from broken local 0.1.6 and preserved user data."
 }
