@@ -5,13 +5,12 @@ import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawn} from 'node:child_process';
 import {packDirectory,inspectArchive} from './archive.mjs';
-const HOST='0.2.0-rc.2';
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 export function chooseRelease(releases,metas,current,channel='stable'){
   return releases.filter(r=>!r.draft&&(channel==='test'||!r.prerelease)).map(r=>({release:r,meta:metas.get(r.id)})).filter(x=>x.meta&&semver.valid(x.meta.version)&&semver.gt(x.meta.version,current)).sort((a,b)=>semver.rcompare(a.meta.version,b.meta.version));
 }
 export class Updater{
-  constructor(ctx,store,meta,busy,root){Object.assign(this,{ctx,store,meta,busy,root});this.status={state:'source-unconfigured',runningVersion:meta.version,lastChecked:null};this.clients=new Map();this.etags=new Map();this.cache=new Map();this.failures=0}
+  constructor(ctx,store,meta,busy,root,hostVersion){Object.assign(this,{ctx,store,meta,busy,root,hostVersion});this.status={state:'source-unconfigured',runningVersion:meta.version,lastChecked:null};this.clients=new Map();this.etags=new Map();this.cache=new Map();this.failures=0}
   get editorDirty(){return [...this.clients.values()].some(c=>c.dirty)}
   get exporting(){return [...this.clients.values()].some(c=>c.exporting)}
   activity(clientId,value){if(typeof clientId!=='string'||clientId.length>100)throw Error('需要工作区标识');this.clients.set(clientId,{dirty:value.dirty===true,exporting:value.exporting===true})}
@@ -38,7 +37,7 @@ export class Updater{
     try{
       const releases=[];for(let page=1;page<=10;page++){const part=await this.request(`https://api.github.com/repos/${repo}/releases?per_page=100&page=${page}`);releases.push(...part);if(part.length<100)break;if(page===10)throw Error('发行记录超过1000条，需收窄发布源')}
       const metas=new Map();for(const r of releases){if(r.draft||(this.store.value.settings.channel!=='test'&&r.prerelease))continue;const asset=r.assets.find(a=>a.name==='page-studio-update.json');if(!asset)continue;metas.set(r.id,JSON.parse((await this.asset(asset.browser_download_url,200000)).toString('utf8')))}
-      const sorted=chooseRelease(releases,metas,this.meta.version,this.store.value.settings.channel),compatible=sorted.find(({meta:m})=>m.plugin===this.meta.name&&semver.satisfies(HOST,m.dsh,{includePrerelease:true})&&m.platform==='win32'&&m.dataSchema===1&&!this.store.value.blockedVersions.includes(m.version));
+      const sorted=chooseRelease(releases,metas,this.meta.version,this.store.value.settings.channel),compatible=sorted.find(({meta:m})=>m.plugin===this.meta.name&&semver.satisfies(this.hostVersion,m.dsh,{includePrerelease:true})&&m.platform==='win32'&&m.dataSchema===1&&!this.store.value.blockedVersions.includes(m.version));
       this.status.lastChecked=new Date().toISOString();this.status.state=compatible?'update-available':sorted.length?'incompatible-update':'up-to-date';this.status.candidate=compatible?.meta||sorted[0]?.meta;delete this.status.error;this.failures=0;this.retryAfter=0;
       if(compatible){this.candidate=compatible;await this.stage();if(this.store.value.settings.autoInstall)await this.install(true)}
     }catch(error){this.status.state='check-failed';this.status.error=error.message;this.retryAfter=Date.now()+Math.min(3600000,30000*2**this.failures++);throw error}finally{this.checking=false}return this.status;

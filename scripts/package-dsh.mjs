@@ -13,7 +13,7 @@ const asset=meta.name+'-'+meta.version+'.tgz',sha256=createHash('sha256').update
 await writeFile(join(output,asset),archive);
 let recoveryTested=false;
 try{const evidence=JSON.parse(await readFile(join(root,'docs/release-validation.json'),'utf8'));recoveryTested=evidence.version===meta.version&&evidence.sha256===sha256&&evidence.nativeRecovery===true}catch{}
-const update={plugin:meta.name,version:meta.version,channel:'stable',dsh:'0.2.0-rc.2',platform:'win32',asset,size:archive.length,sha256,dataSchema:1,requiresRestart:true,recoveryTested,newPermissions:false,irreversibleMigration:false,summary:'Native DSH conversations, prompt execution, versioned editing and Pages/Menus XLSX export. Recovery eligibility is bound to exact archive validation.'};
+const update={plugin:meta.name,version:meta.version,channel:'stable',dsh:meta.engines.dsh,platform:'win32',asset,size:archive.length,sha256,dataSchema:1,requiresRestart:true,recoveryTested,newPermissions:false,irreversibleMigration:false,summary:'Native DSH conversations, prompt execution, versioned editing and Pages/Menus XLSX export. Recovery eligibility is bound to exact archive validation.'};
 await writeFile(join(output,'page-studio-update.json'),JSON.stringify(update,null,2));
 await writeFile(join(output,'SHA256SUMS'),sha256+'  '+asset+'\n');
 console.log(JSON.stringify({asset,version:meta.version,bytes:archive.length,sha256,files:inspection.entries.size}));

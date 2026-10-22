@@ -52,6 +52,6 @@ function initPromptBuilder(){
     try{const values=inputs(),selected=[...list.querySelectorAll('input:checked')].map(b=>b.value),focus=[...$('promptFocus').querySelectorAll('input:checked')].map(b=>b.value);const text=buildMarketingPrompt(values,selected,focus,$('promptSeoInfo').value,$('promptSourceUrl').value);$('promptOutput').value=text;await copy()}
     catch(error){$('promptStatus').textContent=error.message}
   };
-  $('copyPromptAgain').onclick=async()=>{try{await copy()}catch(error){$('promptStatus').textContent=error.message}};
+  if($('copyPromptAgain'))$('copyPromptAgain').onclick=async()=>{try{await copy()}catch(error){$('promptStatus').textContent=error.message}};
 }
 if(typeof document.querySelectorAll==='function')initPromptBuilder();

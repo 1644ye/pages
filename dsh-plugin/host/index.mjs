@@ -3,6 +3,7 @@ import {dirname,join,resolve,basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
 import {resolveDshHome} from '@deepseek-ai/dsh-home-paths';
+import {getDshRuntimeVersion} from '@deepseek-ai/dsh-app-boot';
 import {DshAdapter} from './adapter.mjs';
 import {Tasks} from './tasks.mjs';
 import {Store} from './storage.mjs';
@@ -13,13 +14,14 @@ export const name='page-studio';
 export const inject=['webServer','connection','agents','agentDefaultModel','llm','profileContext','pluginManager'];
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const meta=JSON.parse(await readFile(join(root,'package.json'),'utf8'));
+const hostVersion=getDshRuntimeVersion();
 export const instances=new Map();
 async function body(req){let value='';for await(const chunk of req){value+=chunk;if(Buffer.byteLength(value)>2_000_000)throw Error('请求过大')}return value?JSON.parse(value):{}}
 export async function apply(ctx){
   const profile=basename(ctx.profileContext.dir);
   const store=await new Store(join(resolveDshHome(),'page-studio',profile)).init();
   const adapter=new DshAdapter(ctx),exporter=await new Exporter(root,store).init(),tasks=new Tasks(adapter,store,exporter);
-  const updater=new Updater(ctx,store,meta,()=>!!tasks.active||exporter.running>0,root);
+  const updater=new Updater(ctx,store,meta,()=>!!tasks.active||exporter.running>0,root,hostVersion);
   await updater.init();
   function json(res,value,status=200){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(value))}
   ctx.effect(()=>ctx.webServer.register({kind:'prefix',path:'/page-studio',handler:async(req,res)=>{
@@ -29,7 +31,7 @@ export async function apply(ctx){
       if(path.startsWith('/api/')){
         if(req.method==='GET'&&/^\/api\/files\/Pages-and-Menus-[a-f0-9-]{36}\.xlsx$/.test(path)){const name=path.split('/').at(-1),bytes=await readFile(join(exporter.dir,name));res.writeHead(200,{'Content-Type':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','Content-Disposition':'attachment; filename="'+name+'"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(bytes);return}
         if(req.method!=='GET'&&req.headers['x-page-studio']!=='1')return json(res,{error:'缺少请求标识'},403);
-        if(req.method==='GET'&&path==='/api/state')return json(res,{version:meta.version,host:'0.2.0-rc.2',profile,models:adapter.models(),sessions:ctx.agents.list().map(a=>({id:a.id,status:a.status,provider:a.options.provider,model:a.options.model})),prompts:store.value.prompts,history:store.value.history,settings:store.value.settings,update:updater.status});
+        if(req.method==='GET'&&path==='/api/state')return json(res,{version:meta.version,host:hostVersion,profile,models:adapter.models(),sessions:ctx.agents.list().map(a=>({id:a.id,status:a.status,provider:a.options.provider,model:a.options.model})),prompts:store.value.prompts,history:store.value.history,settings:store.value.settings,update:updater.status});
         if(req.method==='GET'&&path==='/api/models')return json(res,await adapter.modelOptions(url.searchParams.get('provider')));
         if(req.method==='GET'&&path.startsWith('/api/tasks/')){const task=tasks.tasks.get(path.split('/').at(-1));return json(res,tasks.view(task)||{error:'任务不存在'},task?200:404)}
         const input=await body(req);
@@ -69,5 +71,5 @@ export async function apply(ctx){
   // Older recovery helpers also read this exact updates/health.json path.
   await writeFile(join(updater.dir,'health.json'),health);
   await updater.confirmHealth();
-  ctx.logger.info('Page Studio loaded '+meta.version+' (DSH 0.2.0-rc.2)');
+  ctx.logger.info('Page Studio loaded '+meta.version+' (DSH '+hostVersion+')');
 }

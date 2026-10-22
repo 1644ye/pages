@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: windows-latest
     timeout-minutes: 15
+    strategy:
+      matrix:
+        dsh: ['0.2.0-rc.2', '0.2.1-rc.2']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,7 +32,7 @@ jobs:
       - run: node --test dsh-plugin/test/*.test.mjs
       - run: node scripts/package-dsh.mjs
       - name: Install exact DSH runtime for clean-profile verification
-        run: npm install --prefix .dsh-ci @deepseek-ai/dsh@0.2.0-rc.2 --ignore-scripts --no-audit --no-fund --fetch-retries=1 --fetch-timeout=30000
+        run: npm install --prefix .dsh-ci @deepseek-ai/dsh@${{ matrix.dsh }} --ignore-scripts --no-audit --no-fund --fetch-retries=1 --fetch-timeout=30000
       - run: node scripts/ci-install.mjs
       - run: python scripts/package-delivery.py
       - name: Verify tag matches package
@@ -37,5 +40,5 @@ jobs:
         run: node -e "const p=require('./dsh-plugin/package.json');if(process.env.GITHUB_REF_NAME!=='dsh-v'+p.version)process.exit(1)"
       - uses: actions/upload-artifact@v4
         with:
-          name: dsh-installable
+          name: dsh-installable-${{ matrix.dsh }}
           path: release/*

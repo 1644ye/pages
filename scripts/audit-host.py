@@ -2,7 +2,6 @@ import struct,json,pathlib
 base=pathlib.Path.home()/'AppData/Local/Programs/DeepSeek Harness/resources'
 archive=base/'app.asar'
 out=pathlib.Path(__file__).resolve().parents[1]/'.dsh-audit'
-out.mkdir(exist_ok=True)
 with archive.open('rb') as f:
     _,header_size,_,json_size=struct.unpack('<4I',f.read(16))
     header=json.loads(f.read(json_size))
@@ -13,6 +12,8 @@ with archive.open('rb') as f:
             if 'files' in item:walk(item['files'],key+'/')
             else:entries[key]=item
     walk(header['files'])
+    package=entries['package.json'];f.seek(8+header_size+int(package['offset']));version=json.loads(f.read(package['size']))['version']
+    out=out/version;out.mkdir(parents=True,exist_ok=True)
     (out/'file-list.txt').write_text('\n'.join(entries),encoding='utf8')
     for key,item in entries.items():
         selected=key in ['package.json','lib/main.js'] or (key.startswith('dsh/') and (key.endswith(('.js','.mjs','.cjs','.d.ts','.json','.yml','.yaml','.md')) and not key.endswith(('.map','.test.js'))))
