@@ -1,0 +1,7 @@
+url: https://github.com/1644ye/pages/tree/main/dsh-plugin
+name: 1644ye/pages#dsh-shopify-page-studio
+category: workflow
+description:
+  en: 'Generates and edits Shopify content through DeepSeek conversations, with saved prompts and eight-page Matrixify XLSX export including navigation menus.'
+  zh: '通过 DeepSeek 对话生成和编辑 Shopify 内容，支持保存提示词，并导出包含八个页面及导航菜单的 Matrixify XLSX。'
+tarball: https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/dsh-shopify-page-studio-0.1.4.tgz

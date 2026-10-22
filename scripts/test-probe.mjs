@@ -21,7 +21,8 @@ export function apply(ctx){
         const file=join(instance.updater.dir,input.version+'.tgz');await writeFile(file,bytes);instance.updater.staged={file,meta};instance.updater.status.state='staged';value={staged:meta.version};
       }else if(path.endsWith('/install')&&req.method==='POST'){await instance.updater.install(true);value=instance.updater.status;
         if(value.state==='pending-restart'){const file=join(instance.updater.dir,'pending.json');const p=JSON.parse(await readFile(file));p.healthTimeoutMs=15000;await writeFile(file,JSON.stringify(p))}
-      }else value={tasks:instance.tasks.active?.state,dirty:instance.updater.editorDirty,exporting:instance.updater.exporting,update:instance.updater.status};
+      }else if(path.endsWith('/bundles'))value=(await ctx.pluginManager.listBundles()).filter(b=>b.name==='dsh-shopify-page-studio');
+      else value={tasks:instance.tasks.active?.state,dirty:instance.updater.editorDirty,exporting:instance.updater.exporting,update:instance.updater.status};
       res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(value));
     }catch(error){res.writeHead(400,{'Content-Type':'application/json'});res.end(JSON.stringify({error:error.message}))}
   }}),'local verification route');

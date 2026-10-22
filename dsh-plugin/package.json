@@ -1,16 +1,79 @@
 {
   "name": "dsh-shopify-page-studio",
-  "version": "0.1.2",
-  "description": "Shopify 页面与菜单：DSH 对话生成、提示词工作台、版本编辑和 Matrixify XLSX 导出",
+  "version": "0.1.4",
+  "description": "Shopify Page Studio: DeepSeek conversations, editable prompts and eight-page Matrixify XLSX export.",
   "type": "module",
   "main": "host/index.mjs",
-  "exports": { ".": "./host/index.mjs", "./client": "./client.js", "./package.json": "./package.json" },
-  "files": ["host", "shared", "web", "client.js", "cordis.patch.yml", "README.md"],
-  "engines": { "node": ">=24", "dsh": "0.2.0-rc.2" },
-  "peerDependencies": { "@deepseek-ai/dsh-llm": "0.2.0-rc.2", "@deepseek-ai/dsh-home-paths": "0.2.0-rc.2" },
-  "peerDependenciesMeta": { "@deepseek-ai/dsh-llm": {"optional":true}, "@deepseek-ai/dsh-home-paths": {"optional":true} },
-  "dependencies": { "semver": "^7.7.3" },
-  "scripts": { "test": "node --test test/*.test.mjs" },
-  "dsh": { "bundle": { "patch": "./cordis.patch.yml" }, "client": { "platform": "web", "inject": ["@deepseek-ai/dsh-client-ui-slots"] }, "compatibility": { "dshReleases": { "0.2.0-rc.2": "compatible" } } },
-  "license": "UNLICENSED"
+  "exports": {
+    ".": "./host/index.mjs",
+    "./client": "./client.js",
+    "./package.json": "./package.json",
+    "./locale/*": "./locale/*"
+  },
+  "files": [
+    "host",
+    "shared",
+    "web",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "locale"
+  ],
+  "engines": {
+    "node": ">=24",
+    "dsh": "0.2.0-rc.2"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-llm": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-home-paths": "0.2.0-rc.2"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-llm": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-home-paths": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "semver": "^7.7.3"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.0-rc.2": "compatible"
+      }
+    }
+  },
+  "license": "UNLICENSED",
+  "author": "1644ye",
+  "homepage": "https://github.com/1644ye/pages#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1644ye/pages.git",
+    "directory": "dsh-plugin"
+  },
+  "bugs": {
+    "url": "https://github.com/1644ye/pages/issues"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "shopify",
+    "matrixify",
+    "xlsx",
+    "prompt-workbench"
+  ]
 }

@@ -39,7 +39,7 @@ export class Updater{
       const releases=[];for(let page=1;page<=10;page++){const part=await this.request(`https://api.github.com/repos/${repo}/releases?per_page=100&page=${page}`);releases.push(...part);if(part.length<100)break;if(page===10)throw Error('发行记录超过1000条，需收窄发布源')}
       const metas=new Map();for(const r of releases){if(r.draft||(this.store.value.settings.channel!=='test'&&r.prerelease))continue;const asset=r.assets.find(a=>a.name==='page-studio-update.json');if(!asset)continue;metas.set(r.id,JSON.parse((await this.asset(asset.browser_download_url,200000)).toString('utf8')))}
       const sorted=chooseRelease(releases,metas,this.meta.version,this.store.value.settings.channel),compatible=sorted.find(({meta:m})=>m.plugin===this.meta.name&&semver.satisfies(HOST,m.dsh,{includePrerelease:true})&&m.platform==='win32'&&m.dataSchema===1&&!this.store.value.blockedVersions.includes(m.version));
-      this.status.lastChecked=new Date().toISOString();this.status.state=compatible?'update-available':sorted.length?'incompatible-update':'up-to-date';this.status.candidate=compatible?.meta||sorted[0]?.meta;this.failures=0;
+      this.status.lastChecked=new Date().toISOString();this.status.state=compatible?'update-available':sorted.length?'incompatible-update':'up-to-date';this.status.candidate=compatible?.meta||sorted[0]?.meta;delete this.status.error;this.failures=0;this.retryAfter=0;
       if(compatible){this.candidate=compatible;await this.stage();if(this.store.value.settings.autoInstall)await this.install(true)}
     }catch(error){this.status.state='check-failed';this.status.error=error.message;this.retryAfter=Date.now()+Math.min(3600000,30000*2**this.failures++);throw error}finally{this.checking=false}return this.status;
   }

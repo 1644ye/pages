@@ -1,4 +1,58 @@
-# pages
+# Shopify Page Studio · DSH 插件与离线版
+
+DSH 插件通过宿主的 DeepSeek 对话生成七个页面，并附加固定 Contact Us，导出包含八个页面及导航菜单的 Matrixify XLSX。支持流式结果、真实取消、同会话修改、提示词变量、结果编辑和版本历史。分类为工作流与自动化，不是 Shopify 主题或邮件服务。
+
+## 下载、安装与启用
+
+支持 **Windows / DeepSeek Harness 0.2.0-rc.2 / Node 24 运行时**。不声明兼容其他 DSH 版本。
+
+- [正式 Release](https://github.com/1644ye/pages/releases/tag/dsh-v0.1.4)
+- [Windows 安装 ZIP](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/PageStudio-DSH-0.1.4-Windows.zip)
+- [原生插件 TGZ](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/dsh-shopify-page-studio-0.1.4.tgz)
+- [SHA-256 校验文件](https://github.com/1644ye/pages/releases/download/dsh-v0.1.4/SHA256SUMS)
+
+解压 ZIP，双击“安装到DSH.cmd”，安装到 desktop Profile。保存工作后完全退出并重新打开 DSH，点击左下角 **Page Studio · 页面生成**。插件默认启用；若曾关闭，请在 DSH 插件管理器启用 `dsh-shopify-page-studio`。
+
+已用本机真实 CLI 验证以下安装形式；将路径换为你下载文件的绝对路径：
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" --version
+& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop add "C:\Downloads\dsh-shopify-page-studio-0.1.4.tgz"
+```
+
+配置好 DSH 的 DeepSeek 模型后填写参考标题、内容和折扣，点击“生成并导出”。模型使用宿主账号和用量，导出本身在本地完成。保存编辑后再次导出会使用对应的已保存版本。浏览器阻止自动下载时使用结果中的下载链接。Contact Us 表单仅跳转首页，不发送邮件。
+
+## 更新、数据和卸载
+
+默认固定更新仓库为 `1644ye/pages`，启动后及每六小时检查 Release，下载后检查版本、兼容性、包身份、长度和 SHA-256。只有发布元数据声明已验证恢复、没有新权限及不可逆迁移的版本才自动安装；生成、导出或未保存编辑会推迟安装。界面明确提示需要重启，不会强制结束 DSH。网络失败会显示错误。
+
+用户数据在 `%USERPROFILE%\.dsh\page-studio\<Profile>\`，更新/卸载不会删除；失败更新会恢复已备份的旧插件，保留兼容的最新数据并阻止失败版本。SHA-256 用于检测下载损坏，不能防止发布账号被攻破。需要回退时可重新安装此目录 `updates\rollback-<版本>.tgz`，保存工作后重启。
+
+```powershell
+& "$env:LOCALAPPDATA\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" plugin --profile desktop remove dsh-shopify-page-studio
+```
+
+## 插件市场与验证
+
+仓库已使用 `dsh-plugin` topic，投稿分类为 `workflow`。官方提供第三方市场索引协议，不存在统一官方收录状态。Awesome DSH Plugin 要求仓库创建满一天；本仓库创建于 2026-10-22 02:51:24 UTC，2026-10-23 10:51:24（北京时间）后才满足年龄门槛。投稿文件是 `market/submission.yml`，目前为**待提交，未收录**。
+
+另提供[自有 format-1 索引](https://raw.githubusercontent.com/1644ye/pages/main/market/index.json)，安装源固定到不可变 Git commit。当前本机 0.2.0-rc.2 未包含官方 Custom plugin markets，不能宣称在该版本中已验证 Discover；本机请使用 Release 安装包。较新宿主即使支持索引，也需先满足插件的精确兼容声明。
+
+真实宿主验证与未验证范围记录在 [发布验收记录](docs/release-0.1.4.md)。完整中文步骤见 [安装使用说明](docs/DSH安装使用说明.md)。
+
+## 开发与打包
+
+```powershell
+npm ci --prefix dsh-plugin --ignore-scripts --omit=peer
+python scripts/build-dsh.py
+node --test dsh-plugin/test/*.test.mjs
+node scripts/package-dsh.mjs
+python scripts/package-delivery.py
+```
+
+使用 Node 24。源码、依赖清单、锁文件及预构建入口均已提供；`dist/` 是离线版维护源和插件构建输入，保留在 Git 中；`release/`、`portable/` 和运行数据不提交。
+
+## 原离线版说明
 
 # Shopify 页面生成器
 

@@ -34,23 +34,3 @@ jobs:
         with:
           name: dsh-installable
           path: release/*
-  publish:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: dsh-installable
-          path: release
-      - name: Create draft, upload all assets, then publish
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" --draft --title "$GITHUB_REF_NAME" --notes "DSH Page Studio. Windows / DSH 0.2.0-rc.2. Restart required. See installation and validation notes."
-          gh release upload "$GITHUB_REF_NAME" release/*
-          gh release view "$GITHUB_REF_NAME" --json assets --jq '.assets | length' | grep -q '^4$'
-          gh release edit "$GITHUB_REF_NAME" --draft=false

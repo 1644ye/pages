@@ -25,7 +25,7 @@ echo 安装完成。请保存工作后重启 DSH，寻找左下角 Page Studio �
 pause
 '''
 guide=(root/'docs/DSH安装使用说明.md').read_text(encoding='utf8')
-evidence=(root/'docs/dsh-migration.md').read_text(encoding='utf8')
+evidence=(root/'docs'/f'release-{version}.md').read_text(encoding='utf8')+'\n\n'+(root/'docs/dsh-migration.md').read_text(encoding='utf8')
 with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
     z.write(root/'release'/asset,asset)
     z.write(root/'release/SHA256SUMS','SHA256SUMS')

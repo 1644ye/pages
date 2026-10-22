@@ -2,13 +2,13 @@
 
 ## 本次交付
 
-插件版本：0.1.2。目标环境：Windows，DeepSeek Harness 0.2.0-rc.2。
+插件版本：0.1.4。目标环境：Windows，DeepSeek Harness 0.2.0-rc.2。
 这是可安装的 DSH bundle，和原来的“免安装离线 HTML 版”是两个交付物。
 DSH 插件使用你在宿主中配置的 DeepSeek，可能产生正常模型用量；不会另外要求 API Key。
 
 ## 三分钟安装
 
-1. 完整解压 `PageStudio-DSH-0.1.2-Windows.zip`。
+1. 完整解压 `PageStudio-DSH-0.1.4-Windows.zip`。
 2. 双击 `安装到DSH.cmd`。它使用本机已安装的 DSH CLI，把同目录下的 `.tgz` 安装到 `desktop` Profile。安装过程中请等待窗口显示成功；版本不兼容时不要强制跳过检查。
 3. 保存 DSH 中正在进行的工作，然后由你正常关闭并重新打开 DSH。**安装程序不会替你结束 DSH 或其他任务。**
 4. 在 DSH 主界面找到左下角的 `Page Studio · 页面生成` 按钮，点击打开插件工作区。
@@ -16,7 +16,7 @@ DSH 插件使用你在宿主中配置的 DeepSeek，可能产生正常模型用�
 如果安装位置不是标准目录，可以在终端中使用实际 DSH CLI：
 
 ```powershell
-dsh plugin --profile desktop add "解压目录\dsh-shopify-page-studio-0.1.2.tgz"
+dsh plugin --profile desktop add "解压目录\dsh-shopify-page-studio-0.1.4.tgz"
 ```
 
 只有 DSH CLI 已加入 PATH 时，上面的 `dsh` 简写才有效。本机检测到的标准入口是
@@ -86,6 +86,6 @@ dsh plugin --profile desktop remove dsh-shopify-page-studio
 
 ## 验证边界
 
-真实宿主、真实模型、文件与本地升级/回滚证据见 `dsh-migration.md`。
+真实宿主、真实模型、文件与升级/回滚证据见仓库的 `docs/release-0.1.4.md` 和 `docs/dsh-migration.md`。
 自动界面检查被电脑操作工具的安全限制停止，因此安装后需要你亲自确认主界面的 Page Studio 入口。
-没有 GitHub 地址时不声明远端推送、Release、远端 CI 或跨网络自动升级已通过。
+默认更新仓库现为 `1644ye/pages`，源代码与安装包通过 GitHub Release 提供。远端 CI 与跨网络升级以发布验收记录中的实际结果为准。

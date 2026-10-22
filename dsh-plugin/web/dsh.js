@@ -58,7 +58,10 @@ async function refreshState(){
   for(const p of hostState.models.providers.filter(p=>/deepseek/i.test(p.id))){try{const models=await api('models?provider='+encodeURIComponent(p.id));for(const model of models){const value=p.id+'|'+model.id;if(value===opt.value)continue;const option=document.createElement('option');option.value=value;option.textContent=value;$('dshModel').append(option)}}catch(error){setStatus('读取模型列表失败：'+error.message)}}
   if([...$('dshModel').options].some(o=>o.value===previous))$('dshModel').value=previous;
   for(const[id,items,label]of [['savedPrompt',hostState.prompts,p=>p.title+' · v'+p.version],['historySelect',hostState.history.filter(p=>p.state==='completed'&&p.kind==='pages'),p=>(p.edited?'编辑':'生成')+' · '+p.createdAt+' · '+p.revision?.slice(0,8)]]){const select=$(id),old=select.value;select.replaceChildren(new Option('选择…',''));for(const p of items)select.append(new Option(label(p),id==='savedPrompt'?p.id:p.revision));select.value=old}
-  $('releaseRepository').value=hostState.settings.repository;$('autoCheck').checked=hostState.settings.autoCheck;$('autoInstall').checked=hostState.settings.autoInstall;$('updateChannel').value=hostState.settings.channel;$('updateState').textContent=JSON.stringify(hostState.update,null,2);
+  $('releaseRepository').value=hostState.settings.repository;$('autoCheck').checked=hostState.settings.autoCheck;$('autoInstall').checked=hostState.settings.autoInstall;$('updateChannel').value=hostState.settings.channel;showUpdate(hostState.update);
 }
+function showUpdate(update){$('updateState').textContent=JSON.stringify(update,null,2);$('updateNotice').hidden=!['pending-restart','recovered','install-failed','check-failed','manual-review'].includes(update.state);$('updateNotice').textContent=update.state==='pending-restart'?'新版 '+update.installedVersion+' 已安装。请先保存工作，然后退出并重新打开 DSH；当前仍运行旧版。':update.state==='recovered'?'新版启动失败，已恢复旧版；失败版本不会再次自动安装。':update.state==='manual-review'?'发现更新，但该版本尚未满足自动安装条件，请查看更新设置。':update.error||''}
+const updateTimer=setInterval(()=>api('state').then(s=>showUpdate(s.update)).catch(()=>{}),15000);
+window.addEventListener('beforeunload',()=>clearInterval(updateTimer));
 window.addEventListener('beforeunload',()=>{clearTimeout(pollTimer)});
 setRunning(false);refreshState().catch(error=>setStatus('无法连接 DSH：'+error.message));
