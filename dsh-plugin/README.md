@@ -2,7 +2,7 @@
 
 Target: Windows + DSH 0.2.0-rc.2. This is a native bundle, not the old offline HTML distribution.
 
-Install the built `.tgz` through DSH's plugin manager, or `dsh plugin --profile <your-profile> add <absolute-tgz-path>`. Reload/restart as requested by the host. A Page Studio launcher appears in the native overlay. Model requests use the host's selected DeepSeek route and credentials.
+Install the built `.tgz` through DSH's plugin manager, or `dsh plugin --profile <your-profile> add <absolute-tgz-path>`. Reload/restart as requested by the host. Open 页面工作台 in the native DSH sidebar; its editor occupies the host main panel, without a floating launcher or overlay. Model requests use the host's selected DeepSeek route and credentials.
 
 Fill requirements, preview the send payload, then generate or generate-and-export. The generated seven pages are validated and combined with the supplied Contact Us template. Pages and Menus export together as Matrixify XLSX; JSON and homepage/SEO text are also retained. Save edits before switching versions. Prompt templates support `{{variable}}`, defaults, tags, saving, preview and direct execution in DSH.
 

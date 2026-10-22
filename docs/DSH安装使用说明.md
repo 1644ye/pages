@@ -87,5 +87,5 @@ dsh plugin --profile desktop remove dsh-shopify-page-studio
 ## 验证边界
 
 真实宿主、真实模型、文件与升级/回滚证据见仓库的 `docs/release-0.1.7.md` 和 `docs/dsh-migration.md`。
-自动界面检查被电脑操作工具的安全限制停止，因此新版已在真实 DSH 内实际点击侧栏入口、恢复历史结果并导出验证。
+新版已在真实 DSH 内实际点击侧栏入口、恢复历史结果并导出验证。
 默认更新仓库现为 `1644ye/pages`，源代码与安装包通过 GitHub Release 提供。远端 CI 与跨网络升级以发布验收记录中的实际结果为准。
