@@ -1,8 +1,8 @@
 {
-  "version": "0.1.4",
-  "sha256": "9c03ca54190470f18ce29101b692e878f562f9c9aace1b8d03557215185bee48",
+  "version": "0.1.7",
+  "sha256": "229a078eeaecfa4366fb58691f07c63c6a174684fa35cc73161e4e909852e185",
   "nativeRecovery": true,
   "host": "0.2.0-rc.2",
   "platform": "win32",
-  "scope": "Exact installed archive hash verified; real DeepSeek generation and XLSX export; native guard restored this exact archive from broken local 0.1.6 and preserved user data."
+  "scope": "Exact archive: real native sidebar/main panel UI, history dropdown and downloaded XLSX verified; actual native guard restored 0.1.7 from broken local 0.1.8 with data retained. Public positive upgrade and guard exit verified after release."
 }

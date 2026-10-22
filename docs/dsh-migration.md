@@ -1,3 +1,5 @@
+> 历史记录更正：0.1.4 正向升级的短时激活不能证明恢复助手已退出。0.1.7 UI 验收发现健康路径不一致，已修正并补充长期恢复与实际助手退出检查；以 docs/release-0.1.7.md 的最终结果为准。
+
 # DSH migration — evidence and acceptance
 
 ## Stage 0 / 2026-10-22

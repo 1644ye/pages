@@ -52,8 +52,8 @@
       },
       "versions": [
         {
-          "version": "0.1.4",
-          "publishTimestamp": 1792639000,
+          "version": "0.1.7",
+          "publishTimestamp": 1792645616,
           "engines": {
             "node": ">=24",
             "dsh": "0.2.0-rc.2"
@@ -61,7 +61,7 @@
           "source": {
             "type": "git",
             "url": "https://github.com/1644ye/pages",
-            "commit": "6a8bff91bcb79997283abe9fed7806bb2fe18b6e",
+            "commit": "85a9b821e56c0831ea6e53f36aca79425bfbb1c0",
             "path": "dsh-plugin"
           }
         }
