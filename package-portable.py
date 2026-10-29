@@ -3,6 +3,11 @@ from html import escape
 from html.parser import HTMLParser
 import re
 import zipfile
+import sys
+
+# Windows CI and non-Chinese terminals may default to an encoding without CJK.
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 root = Path(__file__).resolve().parent
 dist = root / 'dist'
