@@ -22,8 +22,13 @@ jobs:
       - run: node check-export.cjs
       - run: python package-portable.py
       - run: node check-export.cjs portable/verify-bundle.js
+      - name: Stage portable package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts -Force | Out-Null
+          Copy-Item -LiteralPath (Join-Path (Split-Path $env:GITHUB_WORKSPACE -Parent) 'Shopify页面生成器_免安装离线版.zip') -Destination 'artifacts/Shopify-Page-Studio-offline.zip'
       - uses: actions/upload-artifact@v4
         with:
           name: shopify-page-studio-offline
-          path: ../Shopify页面生成器_免安装离线版.zip
+          path: artifacts/Shopify-Page-Studio-offline.zip
           if-no-files-found: error
