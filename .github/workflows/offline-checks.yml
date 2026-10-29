@@ -1,0 +1,29 @@
+name: Offline generator checks
+on:
+  push:
+    branches: [main]
+    tags: ['offline-v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: node check-export.cjs
+      - run: python package-portable.py
+      - run: node check-export.cjs portable/verify-bundle.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shopify-page-studio-offline
+          path: ../Shopify页面生成器_免安装离线版.zip
+          if-no-files-found: error
