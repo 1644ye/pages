@@ -24,3 +24,7 @@ Thumbs.db
 *.log
 .env*
 !.env.example
+
+.updates/
+.active-version*
+.previous-version

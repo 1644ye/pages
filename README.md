@@ -31,10 +31,33 @@ Contact Us 保留提供的固定内容与表单，提交仅跳转首页，不发
 
 ## 开发与验证
 
+### 豆包对话面板
+
+提示词区域保留“生成提示词并复制”，旁边的“打开豆包对话”展开豆包官网 iframe，默认收起，不会提前联网加载。生成后自行粘贴、发送。收起不销毁 iframe，不读取账号密码或聊天内容。浏览器限制第三方 Cookie 或官网拒绝嵌入时，使用“独立窗口打开”；同一普通浏览器配置的登录状态由豆包及浏览器保存，不能保证登录永久有效。
+
+### 检查与安装更新
+
+页面底部提供 GitHub 正式发布链接、“检查更新”和“更新到最新版本”。不会后台自动检查或安装。自动安装需要通过 `start-icon-tool.cmd`（Python 3.10+）启动，直接双击 HTML 时可检查或手动下载。
+
+更新来自本仓库最新正式 `offline-v` Release 的同名 ZIP，验证 GitHub 提供的 SHA-256、包大小、文件列表和内部版本后安装到 `.updates`。保留原文件和上一版本，启动失败自动回退。通过启动脚本继续打开已安装的新版。更新时暂存表单及已生成页面，刷新后恢复；请勿在更新期间继续编辑。
+
+发布新版时同步修改 `version.json` 与 `dist/update.js` 中的版本，打包并上传到对应的 `offline-v年.月.日.序号` 正式 Release；只推送 main 不触发客户端更新。
+
+### 网站 Icon 提取
+
+安装 Python 3.10 或更高版本后，Windows 双击 `start-icon-tool.cmd`，Mac / Linux 运行 `python3 icon-server.py`。浏览器自动打开本地应用，保持服务窗口开启。在“网站 Icon 提取”中填写网址，提取后预览并下载原始图标。压缩包中也包含服务和启动脚本。
+
+此功能联网访问目标网站，不调用 AI，不使用第三方图标代理，不发送浏览器登录信息。支持 favicon、Apple Touch Icon、mask-icon，按网页声明解析相对地址；未声明图标时提供标为“未验证”的 `/favicon.ico` 候选。支持 PNG、ICO、JPG、GIF、WebP、SVG，单个响应上限 5 MB。需登录或限制自动访问的网站可能无法提取。不执行网站脚本，因此动态注入的图标可能无法识别。
+
+原有页面生成、提示词与 Excel 导出仍可断网双击 HTML 使用，无需 Python。
+
 维护源在 `dist/`。测试使用 Node.js 24，打包使用 Python 3.12，均只使用标准库，无需安装依赖：
 
 ```sh
 node check-export.cjs
+node check-doubao.cjs
+python check-icons.py
+python check-updates.py
 python package-portable.py
 node check-export.cjs portable/verify-bundle.js
 ```

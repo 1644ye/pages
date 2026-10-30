@@ -4,6 +4,7 @@ from html.parser import HTMLParser
 import re
 import zipfile
 import sys
+import json
 
 # Windows CI and non-Chinese terminals may default to an encoding without CJK.
 if hasattr(sys.stdout, 'reconfigure'):
@@ -11,19 +12,22 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 root = Path(__file__).resolve().parent
 dist = root / 'dist'
+version = json.loads((root / 'version.json').read_text(encoding='utf-8'))
+assert version['tag'] == 'offline-v' + version['version']
+assert "const APP_VERSION='" + version['version'] + "';" in (dist / 'update.js').read_text(encoding='utf-8')
 output = root / 'portable'
 output.mkdir(exist_ok=True)
 page = (dist / 'index.html').read_text(encoding='utf-8')
 page = re.sub(r'<link rel="stylesheet" href="style\.css[^\"]*">', lambda _: '<style>' + (dist / 'style.css').read_text(encoding='utf-8') + '</style>', page)
 contact = (dist / 'contact.html').read_text(encoding='utf-8')
 page = page.replace('src="contact.html"', 'srcdoc="' + escape(contact, quote=True) + '"')
-for name in ['contact-template.js', 'generator.js', 'xlsx.js', 'app.js', 'prompt.js']:
+for name in ['contact-template.js', 'generator.js', 'xlsx.js', 'app.js', 'prompt.js', 'icons.js', 'update.js', 'doubao.js']:
     script = (dist / name).read_text(encoding='utf-8')
     # HTML parsers close script elements even when the closing tag occurs in a JS string.
     script = re.sub(r'</script', lambda _: r'<\/script', script, flags=re.I)
     page = re.sub(r'<script src="' + re.escape(name) + r'[^\"]*"></script>', lambda _: '<script>\n' + script + '\n</script>', page)
 assert not re.search(r'<(?:script|iframe)\b[^>]*\bsrc=|<link\b', page, re.I)
-assert 'fetch(' not in page and 'XMLHttpRequest' not in page
+assert 'XMLHttpRequest' not in page
 assert 'C:/Users/' not in page and 'api.openai.com' not in page
 html_path = output / '双击打开.html'
 html_path.write_text(page, encoding='utf-8', newline='')
@@ -49,6 +53,27 @@ instructions = '''Shopify 页面生成器 · 免安装离线版
 - 点击“生成提示词并复制”，自动带入当前品牌、描述和折扣并复制到剪贴板。
 - 全程本地拼接，不调用 AI，不抓取网址。如浏览器拒绝复制，可手动复制显示的文本。
 
+豆包对话
+- 一键生成并复制提示词仍保留，旁边点击“打开豆包对话”展开官网面板，默认收起且不联网加载。
+- 在豆包输入框按 Ctrl+V（Mac：Command+V）粘贴，自行发送；应用不会自动发送提示词。
+- 收起面板不会销毁当前会话。登录由浏览器和豆包保存，应用不读取或存储账号密码。
+- 如果面板空白或第三方 Cookie 限制登录，点击“独立窗口打开”，用同一浏览器的普通窗口登录。
+- 登录过期、清除 Cookie 或使用隐私窗口时，可能需要重新登录。
+
+版本更新
+- 点击“前往 GitHub 查看版本”或“检查更新”。只有手动点击时才联网检查。
+- 自动更新需要用 start-icon-tool.cmd 启动；发现新版后点击“更新到最新版本”。
+- 新版来自 1644ye/pages 的正式 Release，校验后安装到 .updates，自动重启并恢复当前内容。
+- 原版文件保留；新版启动失败时自动恢复旧版。以后继续使用启动脚本打开最新版本。
+- 直接双击 HTML 仍打开原文件，可检查更新或手动下载，不会覆盖本地文件。
+
+网站 Icon 提取
+- 需要联网访问目标网站，不调用 AI，不使用第三方图标代理。
+- 此扩展功能需要 Python 3.10 或更高版本。Windows 双击 start-icon-tool.cmd；
+  Mac / Linux 在解压目录执行 python3 icon-server.py。
+- 浏览器会自动打开本地工具，保持启动窗口开启。填写网址，点击提取，再预览并下载图标。
+- 原有双击 HTML 生成功能仍无需安装环境。图标功能不支持需登录或阻止自动访问的网站。
+
 内容与导出
 - 共 8 个页面：About Us、Customer Service Policy、Privacy Policy、Refund Policy、
   Shipping Policy、Terms of Purchase、Terms of Use、Contact Us。
@@ -70,11 +95,11 @@ readme_path = output / '使用说明.txt'
 readme_path.write_text(instructions, encoding='utf-8-sig')
 archive = root.parent / 'Shopify页面生成器_免安装离线版.zip'
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-    for p in [html_path, readme_path]:
+    for p in [html_path, readme_path, root / 'icon-server.py', root / 'start-icon-tool.cmd', root / 'updater.py', root / 'version.json']:
         z.write(p, 'Shopify页面生成器/' + p.name)
 with zipfile.ZipFile(archive) as z:
     assert z.testzip() is None
-    assert len(z.namelist()) == 2
+    assert len(z.namelist()) == 6
     assert z.read('Shopify页面生成器/双击打开.html').decode('utf-8') == page
 
 class Scripts(HTMLParser):
@@ -87,6 +112,6 @@ class Scripts(HTMLParser):
     def handle_data(self, value):
         if self.inside: self.scripts[-1] += value
 parser=Scripts(); parser.feed(page)
-assert len(parser.scripts) == 5
+assert len(parser.scripts) == 8
 (output / 'verify-bundle.js').write_text('\n'.join(parser.scripts), encoding='utf-8')
-print(f'Created: {archive}\nZIP size: {archive.stat().st_size:,} bytes\nStandalone HTML: {len(page.encode("utf-8")):,} bytes\nVerified: 2 entries, ZIP integrity, embedded resources, 5 intact scripts')
+print(f'Created: {archive}\nZIP size: {archive.stat().st_size:,} bytes\nStandalone HTML: {len(page.encode("utf-8")):,} bytes\nVerified: 6 entries, ZIP integrity, embedded resources, 8 intact scripts')

@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: node check-export.cjs
+      - run: node check-doubao.cjs
+      - run: python check-icons.py
+      - run: python check-updates.py
       - run: python package-portable.py
       - run: node check-export.cjs portable/verify-bundle.js
       - name: Stage portable package
