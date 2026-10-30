@@ -35,27 +35,27 @@ class UpdateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as folder, patch.object(updater, 'check', return_value=self.release(data)), patch.object(updater, 'github_download', return_value=data):
             root = Path(folder)
             (root / 'keep.txt').write_text('original')
-            updater.install(root, '2026.10.30.1', 'offline-v2026.10.31.1')
+            updater.install(root, '2026.10.30.2', 'offline-v2026.10.31.1')
             self.assertTrue((updater.active_directory(root) / '双击打开.html').exists())
             self.assertEqual((root / 'keep.txt').read_text(), 'original')
             self.assertEqual((root / '.previous-version').read_text(), '')
 
     def test_corrupt_archive_traversal_and_wrong_version_leave_original(self):
-        for data, corrupt in [(self.package(), True), (self.package('../outside'), False), (self.package(internal='2026.10.30.1'), False)]:
+        for data, corrupt in [(self.package(), True), (self.package('../outside'), False), (self.package(internal='2026.10.30.2'), False)]:
             with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as folder, patch.object(updater, 'check', return_value=self.release(data)), patch.object(updater, 'github_download', return_value=data + b'corrupt' if corrupt else data):
-                with self.assertRaises(ValueError): updater.install(folder, '2026.10.30.1', 'offline-v2026.10.31.1')
+                with self.assertRaises(ValueError): updater.install(folder, '2026.10.30.2', 'offline-v2026.10.31.1')
                 self.assertFalse((Path(folder) / '.active-version').exists())
 
     def test_changed_release_does_not_install(self):
         with tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parent) as folder, patch.object(updater, 'check', return_value=self.release(self.package())):
-            with self.assertRaises(ValueError): updater.install(folder, '2026.10.30.1', 'offline-v2026.10.31.2')
+            with self.assertRaises(ValueError): updater.install(folder, '2026.10.30.2', 'offline-v2026.10.31.2')
 
     def test_no_downgrade_or_repeat(self):
         response = json.dumps({'tag_name': 'offline-v2026.10.29', 'assets': []}).encode()
         with patch.object(updater, 'github_download', return_value=response):
-            self.assertFalse(updater.check('2026.10.30.1')['available'])
+            self.assertFalse(updater.check('2026.10.30.2')['available'])
             self.assertFalse(updater.check('2026.10.29')['available'])
-        self.assertGreater(updater.version_key('2026.10.30.10'), updater.version_key('2026.10.30.2'))
+        self.assertGreater(updater.version_key('2026.10.30.20'), updater.version_key('2026.10.30.2'))
 
     @unittest.skipUnless(sys.platform == 'win32', 'Windows launcher integration')
     def test_service_restarts_and_rolls_back_failed_start(self):
@@ -89,14 +89,14 @@ class UpdateTests(unittest.TestCase):
                     for _ in range(60):
                         if current(): break
                         time.sleep(.1)
-                    self.assertEqual(current(), '2026.10.30.1')
+                    self.assertEqual(current(), '2026.10.30.2')
                     request = urllib.request.Request(address + '/api/update-install', data=b'{"tag":"offline-v2026.10.31.1"}', headers={'Origin': address, 'Content-Type': 'application/json'})
                     with urllib.request.urlopen(request, timeout=10) as response: self.assertTrue(json.load(response)['restarting'])
                     for _ in range(100):
                         value = current()
-                        if (not broken and value == '2026.10.31.1') or (broken and not (root / '.active-version').exists() and value == '2026.10.30.1'): break
+                        if (not broken and value == '2026.10.31.1') or (broken and not (root / '.active-version').exists() and value == '2026.10.30.2'): break
                         time.sleep(.1)
-                    self.assertEqual(current(), '2026.10.30.1' if broken else '2026.10.31.1')
+                    self.assertEqual(current(), '2026.10.30.2' if broken else '2026.10.31.1')
                     self.assertEqual((root / '.active-version').exists(), not broken)
                 finally:
                     subprocess.run(['taskkill', '/PID', str(process.pid), '/T', '/F'], capture_output=True)

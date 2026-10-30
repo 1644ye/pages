@@ -1,5 +1,5 @@
 'use strict';
-const APP_VERSION='2026.10.30.1';
+const APP_VERSION='2026.10.30.2';
 function initUpdates(){
   const status=document.getElementById('updateStatus'), check=document.getElementById('checkUpdate'), install=document.getElementById('installUpdate');
   let latest;

@@ -12,7 +12,7 @@ import zipfile
 from pathlib import Path
 
 REPO = '1644ye/pages'
-ASSET = 'Shopify页面生成器_免安装离线版.zip'
+ASSET = 'Shopify-Page-Studio-offline.zip'
 FILES = {'双击打开.html', '使用说明.txt', 'icon-server.py', 'start-icon-tool.cmd', 'updater.py', 'version.json'}
 LOCK = threading.Lock()
 
